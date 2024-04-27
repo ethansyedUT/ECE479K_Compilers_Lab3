@@ -1,6 +1,8 @@
 #ifndef INCLUDE_UNIT_LOOP_INFO_H
 #define INCLUDE_UNIT_LOOP_INFO_H
 #include "llvm/IR/PassManager.h"
+#include "llvm/IR/Dominators.h"
+#include <map>
 
 using namespace llvm;
 
@@ -10,6 +12,30 @@ namespace ece479k {
 /// additional information you find useful for your LICM pass
 class UnitLoopInfo {
   // Define this class to provide the information you need in LICM
+  public:
+    //Constructors :
+    UnitLoopInfo() {}
+    UnitLoopInfo(std::map<StringRef, std::set<BasicBlock*>> &NL)
+      : NaturalLoops(NL) {numberOfLoops = NL.size();}
+    UnitLoopInfo(std::map<StringRef, std::set<BasicBlock*>> &NL, DominatorTree* DT)
+      : NaturalLoops(NL), DomTree(DT) {numberOfLoops = NL.size();}
+    
+    // Setters:
+    void setNaturalLoops(std::map<StringRef, std::set<BasicBlock*>> &NL) { NaturalLoops = NL; numberOfLoops = NL.size();}
+
+    // Getters:
+    std::map<StringRef, std::set<BasicBlock*>> get_NaturalLoops() {return NaturalLoops;}
+    int get_label_index(){ int temp = labelindex; labelindex++; return temp;}
+    size_t size(){return numberOfLoops;}
+
+  private:
+    // Key : Header Block Name | Value : List of all BB within loop
+    std::map<StringRef, std::set<BasicBlock*>> NaturalLoops;
+    size_t numberOfLoops;
+    DominatorTree* DomTree;
+    int labelindex = 0;
+
+    
 };
 
 /// Loop Identification Analysis Pass. Produces a UnitLoopInfo object which

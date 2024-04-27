@@ -1,16 +1,24 @@
 {
     "configurations": [
         {
-            "name": "Mac",
+            "name": "windows",
             "includePath": [
                 "${workspaceFolder}/handout/**",
-                "${workspaceFolder}//**"
+                "${workspaceFolder}//**",
+                "C:\\Users\\Ethan\\Desktop\\Classes\\ECE479K_Compilers\\Labs\\Lab3\\llvm\\**",
+                "C:\\Users\\Ethan\\Desktop\\Classes\\ECE479K_Compilers\\Labs\\Lab3\\llvm\\llvm\\**",
+                "C:\\Users\\Ethan\\Desktop\\Classes\\ECE479K_Compilers\\Labs\\Lab3\\llvm\\llvm\\include\\**",
+                "C:\\Users\\Ethan\\Desktop\\Classes\\ECE479K_Compilers\\Labs\\Lab3\\llvm\\llvm\\include\\llvm\\**",
+                "C:\\Users\\Ethan\\Desktop\\Classes\\ECE479K_Compilers\\Labs\\Lab3\\llvm\\llvm\\include\\llvm\\Support\\**",
+                "C:\\Users\\Ethan\\Desktop\\Classes\\ECE479K_Compilers\\Labs\\Lab3\\llvm\\llvm\\include\\llvm\\CodeGen\\**",
+                "C:\\Users\\Ethan\\Desktop\\Classes\\ECE479K_Compilers\\Labs\\Lab3\\llvm\\llvm\\include\\llvm\\Config\\**"
             ],
             "defines": [],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
-            "intelliSenseMode": "macos-clang-arm64"
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerPath": "C:\\msys64\\ucrt64\\bin\\gcc.exe"
         }
     ],
     "version": 4

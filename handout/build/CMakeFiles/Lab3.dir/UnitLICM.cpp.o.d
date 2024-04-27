@@ -345,4 +345,26 @@ CMakeFiles/Lab3.dir/UnitLICM.cpp.o: /code/UnitLICM.cpp \
  /usr/local/include/llvm/Support/Format.h \
  /usr/local/include/llvm/Support/TypeName.h /usr/include/c++/11/list \
  /usr/include/c++/11/bits/stl_list.h /usr/include/c++/11/bits/list.tcc \
- /code/UnitLoopInfo.h
+ /code/UnitLoopInfo.h /usr/local/include/llvm/IR/Dominators.h \
+ /usr/local/include/llvm/ADT/DepthFirstIterator.h \
+ /usr/local/include/llvm/ADT/GraphTraits.h \
+ /usr/local/include/llvm/IR/CFG.h /usr/local/include/llvm/Pass.h \
+ /usr/local/include/llvm/PassAnalysisSupport.h \
+ /usr/local/include/llvm/PassSupport.h /usr/local/include/llvm/PassInfo.h \
+ /usr/local/include/llvm/PassRegistry.h \
+ /usr/local/include/llvm/Support/RWMutex.h \
+ /usr/local/include/llvm/Support/Threading.h \
+ /usr/local/include/llvm/ADT/BitVector.h /usr/include/c++/11/ciso646 \
+ /usr/include/c++/11/mutex /usr/include/c++/11/chrono \
+ /usr/include/c++/11/ratio /usr/include/c++/11/ctime \
+ /usr/include/c++/11/bits/parse_numbers.h \
+ /usr/include/c++/11/bits/unique_lock.h /usr/include/c++/11/shared_mutex \
+ /usr/local/include/llvm/Support/CFGDiff.h \
+ /usr/local/include/llvm/Support/CFGUpdate.h \
+ /usr/local/include/llvm/Support/GenericDomTree.h \
+ /usr/local/include/llvm/Support/GenericDomTreeConstruction.h \
+ /usr/include/c++/11/queue /usr/include/c++/11/deque \
+ /usr/include/c++/11/bits/stl_deque.h /usr/include/c++/11/bits/deque.tcc \
+ /usr/include/c++/11/bits/stl_queue.h /usr/include/c++/11/map \
+ /usr/include/c++/11/bits/stl_map.h \
+ /usr/include/c++/11/bits/stl_multimap.h

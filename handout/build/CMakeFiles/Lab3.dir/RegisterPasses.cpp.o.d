@@ -430,4 +430,12 @@ CMakeFiles/Lab3.dir/RegisterPasses.cpp.o: /code/RegisterPasses.cpp \
  /usr/local/include/llvm/Transforms/Utils/ValueMapper.h \
  /usr/local/include/llvm/Passes/PassPlugin.h \
  /usr/local/include/llvm/Support/DynamicLibrary.h /code/UnitLICM.h \
- /code/UnitLoopInfo.h /code/UnitSCCP.h
+ /code/UnitLoopInfo.h /usr/local/include/llvm/IR/Dominators.h \
+ /usr/local/include/llvm/ADT/DepthFirstIterator.h \
+ /usr/local/include/llvm/Support/CFGDiff.h \
+ /usr/local/include/llvm/Support/CFGUpdate.h \
+ /usr/local/include/llvm/Support/GenericDomTree.h \
+ /usr/local/include/llvm/Support/GenericDomTreeConstruction.h \
+ /usr/include/c++/11/queue /usr/include/c++/11/deque \
+ /usr/include/c++/11/bits/stl_deque.h /usr/include/c++/11/bits/deque.tcc \
+ /usr/include/c++/11/bits/stl_queue.h /code/UnitSCCP.h

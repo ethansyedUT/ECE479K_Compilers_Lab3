@@ -442,4 +442,8 @@ CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o: /code/UnitLoopInfo.cpp \
  /usr/local/include/llvm/Support/SMLoc.h \
  /usr/local/include/llvm/Transforms/Utils/ValueMapper.h \
  /usr/local/include/llvm/Passes/PassPlugin.h \
- /usr/local/include/llvm/Support/DynamicLibrary.h /code/UnitLoopInfo.h
+ /usr/local/include/llvm/Support/DynamicLibrary.h /code/UnitLoopInfo.h \
+ /usr/include/c++/11/iostream /usr/include/c++/11/istream \
+ /usr/include/c++/11/bits/istream.tcc /usr/include/c++/11/unordered_set \
+ /usr/include/c++/11/bits/unordered_set.h /usr/include/c++/11/stack \
+ /usr/include/c++/11/bits/stl_stack.h
