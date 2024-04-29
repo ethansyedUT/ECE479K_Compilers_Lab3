@@ -64,17 +64,6 @@ UnitLoopInfo UnitLoopAnalysis::run(Function &F, FunctionAnalysisManager &FAM) {
         if (properDomination) {
 
             // Self is included
-            //std::set<BasicBlock*> LoopBlocks;
-            // BasicBlock* CurrentNode = Succ; // Succ = Loop header
-            // for(BasicBlock *child : successors(Succ)){
-            //   LoopBlocks.insert(child);
-            //   CurrentNode = child;
-            //   if(child->getName().compare(BB.getName()) == 0){
-            //     LoopBlocks.insert(child);
-            //     break;
-            //   }
-            // }
-
             std::set<BasicBlock*> LoopBody;
             LoopBody.insert(Succ);
             size_t bodyLastSize = LoopBody.size();
@@ -111,10 +100,67 @@ UnitLoopInfo UnitLoopAnalysis::run(Function &F, FunctionAnalysisManager &FAM) {
   
 
   UnitLoopInfo Loops(NaturalLoops, &DT);
+  //reachingDefinitions(F, Loops);
   // Fill in appropriate information
   //Loops.setNaturalLoops(NaturalLoops);
-
   return Loops;
+}
+
+// Initializes OUT set of each Loop
+//    OUT - represents the definition
+void reachingDefinitions(Function& F, UnitLoopInfo Loops){
+  // // Initialize data structures
+  //   std::map<BasicBlock*, std::set<Instruction*>> IN, OUT, GEN, KILL;
+  //   std::set<BasicBlock*> Changed;
+
+  //   // Initialize OUT sets to empty
+  //   for (BasicBlock& BB : F) {
+  //       OUT[&BB] = std::set<Instruction*>();
+  //   }
+
+  //   // Initialize IN[Entry] and OUT[Entry]
+  //   BasicBlock& Entry = F.getEntryBlock();
+  //   IN[&Entry] = std::set<Instruction*>();
+  //   OUT[&Entry] = GEN[&Entry]; // Compute GEN[Entry]
+
+  //   // Initialize Changed set
+  //   Changed = std::set<BasicBlock*>(F.begin(), F.end());
+  //   Changed.erase(&Entry);
+
+  //   while (!Changed.empty()) {
+  //       // Choose a node n from Changed
+  //       BasicBlock* n = *Changed.begin();
+  //       Changed.erase(Changed.begin());
+
+  //       // Compute IN[n]
+  //       IN[n] = std::set<Instruction*>();
+  //       for (BasicBlock* p : predecessors(n)) {
+  //           for (Instruction* I : OUT[p]) {
+  //               IN[n].insert(I);
+  //           }
+  //       }
+
+  //       // Compute OUT[n]
+  //       OUT[n] = GEN[n]; // Compute GEN[n]
+  //       for (Instruction* I : IN[n]) {
+  //           if (KILL[n].count(I) == 0) { // Compute KILL[n]
+  //               OUT[n].insert(I);
+  //           }
+  //       }
+
+  //       // Check if OUT[n] changed
+  //       bool outChanged = false;
+  //       if (OUT[n] != IN[n]) {
+  //           outChanged = true;
+  //       }
+
+  //       // Update Changed set
+  //       if (outChanged) {
+  //           for (BasicBlock* s : successors(n)) {
+  //               Changed.insert(s);
+  //           }
+  //       }
+  //   }
 }
 
 AnalysisKey UnitLoopAnalysis::Key;

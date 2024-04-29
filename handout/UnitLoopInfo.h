@@ -24,9 +24,11 @@ class UnitLoopInfo {
     void setNaturalLoops(std::map<StringRef, std::set<BasicBlock*>> &NL) { NaturalLoops = NL; numberOfLoops = NL.size();}
 
     // Getters:
-    std::map<StringRef, std::set<BasicBlock*>> get_NaturalLoops() {return NaturalLoops;}
+    std::map<StringRef, std::set<BasicBlock*>>& get_NaturalLoops() {return NaturalLoops;}
     int get_label_index(){ int temp = labelindex; labelindex++; return temp;}
     size_t size(){return numberOfLoops;}
+
+    DominatorTree* getDomTree() {return DomTree;}
 
   private:
     // Key : Header Block Name | Value : List of all BB within loop
@@ -36,6 +38,15 @@ class UnitLoopInfo {
     int labelindex = 0;
 
     
+};
+
+class UnitLoopInfoHelper{
+  public:
+
+
+  private:
+  BasicBlock* preheader;
+  std::set<BasicBlock*> LoopBody;
 };
 
 /// Loop Identification Analysis Pass. Produces a UnitLoopInfo object which
