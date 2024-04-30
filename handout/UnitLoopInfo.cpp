@@ -9,6 +9,7 @@
 #include <iostream>
 #include <unordered_set>
 #include <stack>
+#define LOOPKEYISHEADER 1
 
 using namespace llvm;
 using namespace ece479k;
@@ -21,9 +22,6 @@ UnitLoopInfo UnitLoopAnalysis::run(Function &F, FunctionAnalysisManager &FAM) {
   // Acquires the Dominator Tree constructed by LLVM for this function. You may
   // find this useful in identifying the natural loops
   DominatorTree &DT = FAM.getResult<DominatorTreeAnalysis>(F);
-  //DomTreeNode baseNode = DT.getRootNode();
-
-  
 
   // (Debug Purposes) BB Identification
   // Naming each BB
@@ -33,66 +31,71 @@ UnitLoopInfo UnitLoopAnalysis::run(Function &F, FunctionAnalysisManager &FAM) {
       ++BBIndex;
   }
 
-
-  // Process:
-  // Search Basic Blocks for backedges
-  // Iterate through backedges & identify if they properly dominate 
-  //    Successor properly dominates node if it dominates all predecessors
-  // If:
-  //    Add all nodes to a 
-  // Else : 
-  //    
-  //
-  // Main
-
   // initialize a list of natural loop here 
   //std::vector<std::set<BasicBlock*>> NaturalLoops;
   std::map<StringRef, std::set<BasicBlock*>> NaturalLoops;
-  for (BasicBlock &BB : F){
-    for (BasicBlock *Succ : successors(&BB)){
-      if(DT.dominates(Succ, &BB)){
-        // Check for proper domination
-        bool properDomination = true;
-        for( BasicBlock *Pred : predecessors(&BB)){
-          if(!DT.dominates(Succ, &BB)){
-            properDomination = false;
-            dbgs() << Succ->getName() << " does not dominate predecessor: " << Pred->getName() << "\n";
-          }
-        }
 
-        // Add nodes between the dominator node and the final node to the list of basic blocks
-        if (properDomination) {
 
-            // Self is included
-            std::set<BasicBlock*> LoopBody;
-            LoopBody.insert(Succ);
-            size_t bodyLastSize = LoopBody.size();
-
-            std::stack<BasicBlock*> bb_accumulate;
-            bb_accumulate.push(&BB);
-            while(!bb_accumulate.empty()){
-              BasicBlock* check = bb_accumulate.top();
-              bb_accumulate.pop();
-              if(LoopBody.find(check) == LoopBody.end()){
-                LoopBody.insert(check);
-                //push all predecessors of check onto stack
-                for (BasicBlock *sub_pred : predecessors(check)){
-                  bb_accumulate.push(sub_pred);
-                }
-              }
-
-            }
-            
-            // Natural Loop debugging
-            // dbgs() << "Natural Loops: " << "\n";
-            // for(llvm::StringRef n : LoopBlocks){
-            //   dbgs() << n;
-            // }
-            // dbgs() << "\n";
-            NaturalLoops[Succ->getName()] = LoopBody;
-
+//look for successors that dominate the current basic block
+  for (BasicBlock &basicBlock : F){
+    for (BasicBlock *bassicBlockSuccessor : successors(&basicBlock)){
+      // if the successor doesnt dominate the current basic block, skip
+      if(!DT.dominates(bassicBlockSuccessor, &basicBlock)){continue;} 
+    
+      //not sure if this loop is necessary but it is a good idea to check if the successor(header) dominates all of predecessors(LoopBody)
+      
+      for( BasicBlock *basicBlockPredicessor : predecessors(&basicBlock)){
+        //changed the condition since the previous code would define the predicessor but not use the prediciesor
+        if(!DT.dominates(bassicBlockSuccessor,basicBlockPredicessor)){
+          break;
+          dbgs() << bassicBlockSuccessor->getName() << " does not dominate predecessor: " << basicBlockPredicessor->getName() << "\n";
         }
       }
+      
+
+      // Add nodes between the dominator node and the final node to the list of basic block
+      //rename for ease 
+      BasicBlock* header = bassicBlockSuccessor;
+      BasicBlock* loopEnd = &basicBlock;
+
+      std::set<BasicBlock*> LoopBody;
+      LoopBody.insert(header);
+
+      std::stack<BasicBlock*> bb_accumulate;
+      bb_accumulate.push(loopEnd);
+
+      //this could prolly be done with recursion but oh well
+      while(!bb_accumulate.empty()){
+        
+        //pop top of stack
+        BasicBlock* check = bb_accumulate.top();bb_accumulate.pop();
+
+        //if check is in the loop body, skip
+        if(LoopBody.find(check) == LoopBody.end()){
+          LoopBody.insert(check);
+          //push all predecessors of check onto stack
+          for (BasicBlock *sub_pred : predecessors(check)){
+            bb_accumulate.push(sub_pred);
+          }
+        }
+      }
+
+      //find the loop exits 
+      std::set<std::pair<BasicBlock*,BasicBlock*>> LoopExits;
+      for (BasicBlock *bb : LoopBody){
+        for (BasicBlock *succ : successors(bb)){
+          if(std::find(LoopBody.begin(), LoopBody.end(), succ) == LoopBody.end()){
+            LoopExits.insert(std::make_pair(bb,succ));
+          }
+        }
+      }
+
+    //changed the key to the header name since that is what is assumed in the LICM.cpp
+    #ifdef LOOPKEYISHEADER
+    NaturalLoops[header->getName()] = LoopBody; 
+    #else
+    NaturalLoops[tail->getName()] = LoopBody;
+    #endif
     }
     
   }

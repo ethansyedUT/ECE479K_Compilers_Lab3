@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/code/RegisterPasses.cpp" "CMakeFiles/Lab3.dir/RegisterPasses.cpp.o" "gcc" "CMakeFiles/Lab3.dir/RegisterPasses.cpp.o.d"
-  "/code/UnitLICM.cpp" "CMakeFiles/Lab3.dir/UnitLICM.cpp.o" "gcc" "CMakeFiles/Lab3.dir/UnitLICM.cpp.o.d"
-  "/code/UnitLoopInfo.cpp" "CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o" "gcc" "CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o.d"
-  "/code/UnitSCCP.cpp" "CMakeFiles/Lab3.dir/UnitSCCP.cpp.o" "gcc" "CMakeFiles/Lab3.dir/UnitSCCP.cpp.o.d"
+  "/code/handout/RegisterPasses.cpp" "CMakeFiles/Lab3.dir/RegisterPasses.cpp.o" "gcc" "CMakeFiles/Lab3.dir/RegisterPasses.cpp.o.d"
+  "/code/handout/UnitLICM.cpp" "CMakeFiles/Lab3.dir/UnitLICM.cpp.o" "gcc" "CMakeFiles/Lab3.dir/UnitLICM.cpp.o.d"
+  "/code/handout/UnitLoopInfo.cpp" "CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o" "gcc" "CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o.d"
+  "/code/handout/UnitSCCP.cpp" "CMakeFiles/Lab3.dir/UnitSCCP.cpp.o" "gcc" "CMakeFiles/Lab3.dir/UnitSCCP.cpp.o.d"
   )
 
 # Targets to which this target links.

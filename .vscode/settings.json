@@ -1,6 +1,7 @@
 {
     "cmake.configureOnOpen": true,
     "files.associations": {
+        "*.ino": "cpp",
         "array": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
@@ -79,6 +80,9 @@
         "print": "cpp",
         "*.def": "cpp",
         "forward_list": "cpp",
-        "queue": "cpp"
-    }
+        "queue": "cpp",
+        "cstdarg": "cpp"
+    },
+    "cmake.sourceDirectory": "/code/handout",
+    "C_Cpp.errorSquiggles": "enabled"
 }

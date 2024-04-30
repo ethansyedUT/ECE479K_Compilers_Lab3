@@ -1,4 +1,4 @@
-CMakeFiles/Lab3.dir/UnitSCCP.cpp.o: /code/UnitSCCP.cpp \
+CMakeFiles/Lab3.dir/UnitSCCP.cpp.o: /code/handout/UnitSCCP.cpp \
  /usr/include/stdc-predef.h /usr/local/include/llvm/Support/raw_ostream.h \
  /usr/local/include/llvm/ADT/SmallVector.h \
  /usr/local/include/llvm/Support/Compiler.h \
@@ -231,7 +231,7 @@ CMakeFiles/Lab3.dir/UnitSCCP.cpp.o: /code/UnitSCCP.cpp \
  /usr/local/include/llvm-c/DataTypes.h /usr/include/inttypes.h \
  /usr/local/include/llvm/Support/ErrorHandling.h \
  /usr/local/include/llvm/Support/SwapByteOrder.h \
- /usr/local/include/llvm/ADT/None.h /code/UnitSCCP.h \
+ /usr/local/include/llvm/ADT/None.h /code/handout/UnitSCCP.h \
  /usr/local/include/llvm/IR/PassManager.h \
  /usr/local/include/llvm/ADT/DenseMap.h \
  /usr/local/include/llvm/ADT/EpochTracker.h \

@@ -3,9 +3,11 @@
 
 #include "UnitLICM.h"
 #include "UnitLoopInfo.h"
+#define LOOPKEYISHEADER 1
 
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Dominators.h"
+#include "llvm/Analysis/ValueTracking.h"
 //"C:\Users\Ethan\Desktop\Classes\ECE479K_Compilers\Labs\Lab3\llvm\llvm\include\llvm\MCA\Instruction.h"
 
 #define DEBUG_TYPE UnitLICM
@@ -120,8 +122,9 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
   }
 
   // Not needed
-  dbgs() << "========== Reaching Def Pass ========== "
-         << "\n";
+  dbgs() << "========== Reaching Def Pass ========== " << "\n";
+
+
   // Reaching definition analysis
   for (const auto &loop : Loops.get_NaturalLoops())
   {
@@ -136,47 +139,62 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
 
   DominatorTree &DT = FAM.getResult<DominatorTreeAnalysis>(F);
 
-  dbgs() << "========== Hoisting Pass ========== "
-         << "\n";
+  dbgs() << "========== Hoisting Pass ========== "<< "\n";
+
+
   // Actual hoisting of instructions
-  for (auto &loop : Loops.get_NaturalLoops())
-  {
+  for (auto &loop : Loops.get_NaturalLoops()){
+    Hoist(loop,Loops);
+  }
+
+  // Set proper preserved analyses
+  return PreservedAnalyses::all();
+}
+
+void UnitLICM::Hoist(std::pair<const llvm::StringRef, std::set<llvm::BasicBlock *>> &loop, UnitLoopInfo Loops){
+
+
+    //get the loop header
+
+    #ifdef LOOPKEYISHEADER
     BasicBlock *header = *loop.second.begin(); // Get the loop header
+    assert(header->getName() == loop.first && "Header name does not match loop name");
+    #else
+    BasicBlock *header = loop.second.begin(); // Get the loop header
+    #endif
 
-    // BasicBlock* preheader = F.getBasicBlockByName(loop.first); // Get the loop preheader
-    //  create a preheader basicblock
-    BasicBlock *preheader;
-    bool preheaderCreated = false;
 
-    if (!preheaderCreated)
+    //CHANGE: removed the preheaderCreated is false check since it is always false
+    //CHANGE: make the preheader be inserted before the header instead of at the end of the function 
+    BasicBlock* preheader = BasicBlock::Create(header->getContext(), "preheader",nullptr, header); 
+    
+    assert(preheader!=nullptr && "Preheader not created");
+    assert(header!=nullptr && "could not get header from loop in LICM");
+    BranchInst::Create(header, preheader); // Causes Seg fault when switched (preheader, header)
+    for (BasicBlock *pred : predecessors(header))
     {
-      preheader = BasicBlock::Create(header->getContext(), "preheader", header->getParent());
-      BranchInst::Create(header, preheader); // Causes Seg fault when switched (preheader, header)
-      for (BasicBlock *pred : predecessors(header))
-      {
-        pred->getTerminator()->replaceUsesOfWith(header, preheader); // Problem here
-      }
-      // DT.addNewBlock(preheader, header);
-
-      preheaderCreated = true;
+      //replace the uses with the preheader
+      pred->getTerminator()->replaceUsesOfWith(header, preheader);
     }
 
-    for (BasicBlock *bb : loop.second)
-    {
-      for (BasicBlock::iterator I = bb->begin(), E = bb->end(); I != E; ++I)
-      {
+
+
+
+
+    for (BasicBlock *bb : loop.second){
+      // Skip the header
+      if(bb == header && bb->getName().compare(header->getName()) ==0){continue;} 
+      
+      for (BasicBlock::iterator I = bb->begin(), E = bb->end(); I != E; ++I){
         Instruction *Inst = &*I;
         // Skip terminator operations
-        if (Inst->isTerminator())
-        {
-          continue;
-        }
+        if (Inst->isTerminator()){continue;}
 
-        bool canHoist = !Inst->mayHaveSideEffects(); // Change later to handle mem ops
+        bool canHoist = this->canHoist(Inst,bb,header,Loops);
+        bool isLoopInvarient = Inst->mayHaveSideEffects();
 
-        bool sideEffects = Inst->mayHaveSideEffects();
-        if (!sideEffects)
-        {
+
+        if (!isLoopInvarient){
           for (Value *op : Inst->operands())
           {
             // Logic here may be incorrect
@@ -190,8 +208,7 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
             }
           }
         }
-        else
-        {
+        else{
           // ld / st
         }
 
@@ -211,15 +228,40 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
             // Inst->moveBefore(lastInst); // Cause Seg Fault
           }
         }
+
+
+
       }
     }
-  }
 
-  // Set proper preserved analyses
-  return PreservedAnalyses::all();
+  
+
+
+}
+bool UnitLICM::canHoist(Instruction* i, BasicBlock* bb, BasicBlock* Header ,UnitLoopInfo Loops){
+  if(isSafeToSpeculativelyExecute(i)){
+    return true;
+  }
+  else{
+    //check if bb dominates all exits
+    DominatorTree *DT = Loops.getDomTree();
+    for(auto &exit : Loops.get_LoopExits().at(Header->getName())){
+      if(!DT->dominates(bb,exit.first)){
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
-// Command to run pass
-/*
-clang ../tests/doloop.c -c -O0 -Xclang -disable-O0-optnone -emit-llvm -S -o - | opt -load-pass-plugin=./libLab3.so -passes="function(mem2reg,instcombine,simplifycfg,adce),inline,globaldce,function(sroa,early-cse,unit-sccp,jump-threading,correlated-propagation,simplifycfg,instcombine,simplifycfg,reassociate,unit-licm,adce,simplifycfg,instcombine),globaldce" -S -o doloop.ll
-*/
+bool UnitLICM::isLoopInvariant(Instruction* i){
+  //every operand of i is either constant or defined outside of the loop
+  for (Value *op : i->operands())
+  {
+    
+    
+
+  }
+
+
+}

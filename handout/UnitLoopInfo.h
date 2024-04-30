@@ -30,12 +30,17 @@ class UnitLoopInfo {
 
     DominatorTree* getDomTree() {return DomTree;}
 
+    std::map<StringRef, std::set<std::pair<BasicBlock*,BasicBlock*>>>& get_LoopExits() {return LoopExits;}
+
   private:
     // Key : Header Block Name | Value : List of all BB within loop
     std::map<StringRef, std::set<BasicBlock*>> NaturalLoops;
+    // Key : Header Block Name | Value : List of (Exit block in loop, where the loop exits to) // if a block exits to multiple blocks, it will be listed multiple times
+    std::map<StringRef, std::set<std::pair<BasicBlock*,BasicBlock*>>> LoopExits;
     size_t numberOfLoops;
     DominatorTree* DomTree;
     int labelindex = 0;
+
 
     
 };

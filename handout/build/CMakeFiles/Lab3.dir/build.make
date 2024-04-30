@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /code
+CMAKE_SOURCE_DIR = /code/handout
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /code/build
+CMAKE_BINARY_DIR = /code/handout/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/Lab3.dir/depend.make
@@ -72,58 +72,58 @@ include CMakeFiles/Lab3.dir/flags.make
 CMakeFiles/Lab3.dir/UnitLICM.cpp.o: CMakeFiles/Lab3.dir/flags.make
 CMakeFiles/Lab3.dir/UnitLICM.cpp.o: ../UnitLICM.cpp
 CMakeFiles/Lab3.dir/UnitLICM.cpp.o: CMakeFiles/Lab3.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Lab3.dir/UnitLICM.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Lab3.dir/UnitLICM.cpp.o -MF CMakeFiles/Lab3.dir/UnitLICM.cpp.o.d -o CMakeFiles/Lab3.dir/UnitLICM.cpp.o -c /code/UnitLICM.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/code/handout/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Lab3.dir/UnitLICM.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Lab3.dir/UnitLICM.cpp.o -MF CMakeFiles/Lab3.dir/UnitLICM.cpp.o.d -o CMakeFiles/Lab3.dir/UnitLICM.cpp.o -c /code/handout/UnitLICM.cpp
 
 CMakeFiles/Lab3.dir/UnitLICM.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lab3.dir/UnitLICM.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /code/UnitLICM.cpp > CMakeFiles/Lab3.dir/UnitLICM.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /code/handout/UnitLICM.cpp > CMakeFiles/Lab3.dir/UnitLICM.cpp.i
 
 CMakeFiles/Lab3.dir/UnitLICM.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lab3.dir/UnitLICM.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /code/UnitLICM.cpp -o CMakeFiles/Lab3.dir/UnitLICM.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /code/handout/UnitLICM.cpp -o CMakeFiles/Lab3.dir/UnitLICM.cpp.s
 
 CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o: CMakeFiles/Lab3.dir/flags.make
 CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o: ../UnitLoopInfo.cpp
 CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o: CMakeFiles/Lab3.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o -MF CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o.d -o CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o -c /code/UnitLoopInfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/code/handout/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o -MF CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o.d -o CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o -c /code/handout/UnitLoopInfo.cpp
 
 CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /code/UnitLoopInfo.cpp > CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /code/handout/UnitLoopInfo.cpp > CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.i
 
 CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /code/UnitLoopInfo.cpp -o CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /code/handout/UnitLoopInfo.cpp -o CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.s
 
 CMakeFiles/Lab3.dir/UnitSCCP.cpp.o: CMakeFiles/Lab3.dir/flags.make
 CMakeFiles/Lab3.dir/UnitSCCP.cpp.o: ../UnitSCCP.cpp
 CMakeFiles/Lab3.dir/UnitSCCP.cpp.o: CMakeFiles/Lab3.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Lab3.dir/UnitSCCP.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Lab3.dir/UnitSCCP.cpp.o -MF CMakeFiles/Lab3.dir/UnitSCCP.cpp.o.d -o CMakeFiles/Lab3.dir/UnitSCCP.cpp.o -c /code/UnitSCCP.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/code/handout/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Lab3.dir/UnitSCCP.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Lab3.dir/UnitSCCP.cpp.o -MF CMakeFiles/Lab3.dir/UnitSCCP.cpp.o.d -o CMakeFiles/Lab3.dir/UnitSCCP.cpp.o -c /code/handout/UnitSCCP.cpp
 
 CMakeFiles/Lab3.dir/UnitSCCP.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lab3.dir/UnitSCCP.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /code/UnitSCCP.cpp > CMakeFiles/Lab3.dir/UnitSCCP.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /code/handout/UnitSCCP.cpp > CMakeFiles/Lab3.dir/UnitSCCP.cpp.i
 
 CMakeFiles/Lab3.dir/UnitSCCP.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lab3.dir/UnitSCCP.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /code/UnitSCCP.cpp -o CMakeFiles/Lab3.dir/UnitSCCP.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /code/handout/UnitSCCP.cpp -o CMakeFiles/Lab3.dir/UnitSCCP.cpp.s
 
 CMakeFiles/Lab3.dir/RegisterPasses.cpp.o: CMakeFiles/Lab3.dir/flags.make
 CMakeFiles/Lab3.dir/RegisterPasses.cpp.o: ../RegisterPasses.cpp
 CMakeFiles/Lab3.dir/RegisterPasses.cpp.o: CMakeFiles/Lab3.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Lab3.dir/RegisterPasses.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Lab3.dir/RegisterPasses.cpp.o -MF CMakeFiles/Lab3.dir/RegisterPasses.cpp.o.d -o CMakeFiles/Lab3.dir/RegisterPasses.cpp.o -c /code/RegisterPasses.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/code/handout/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Lab3.dir/RegisterPasses.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Lab3.dir/RegisterPasses.cpp.o -MF CMakeFiles/Lab3.dir/RegisterPasses.cpp.o.d -o CMakeFiles/Lab3.dir/RegisterPasses.cpp.o -c /code/handout/RegisterPasses.cpp
 
 CMakeFiles/Lab3.dir/RegisterPasses.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lab3.dir/RegisterPasses.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /code/RegisterPasses.cpp > CMakeFiles/Lab3.dir/RegisterPasses.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /code/handout/RegisterPasses.cpp > CMakeFiles/Lab3.dir/RegisterPasses.cpp.i
 
 CMakeFiles/Lab3.dir/RegisterPasses.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lab3.dir/RegisterPasses.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /code/RegisterPasses.cpp -o CMakeFiles/Lab3.dir/RegisterPasses.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /code/handout/RegisterPasses.cpp -o CMakeFiles/Lab3.dir/RegisterPasses.cpp.s
 
 # Object files for target Lab3
 Lab3_OBJECTS = \
@@ -141,7 +141,7 @@ libLab3.so: CMakeFiles/Lab3.dir/UnitSCCP.cpp.o
 libLab3.so: CMakeFiles/Lab3.dir/RegisterPasses.cpp.o
 libLab3.so: CMakeFiles/Lab3.dir/build.make
 libLab3.so: CMakeFiles/Lab3.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX shared library libLab3.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/code/handout/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX shared library libLab3.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Lab3.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -153,6 +153,6 @@ CMakeFiles/Lab3.dir/clean:
 .PHONY : CMakeFiles/Lab3.dir/clean
 
 CMakeFiles/Lab3.dir/depend:
-	cd /code/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /code /code /code/build /code/build /code/build/CMakeFiles/Lab3.dir/DependInfo.cmake --color=$(COLOR)
+	cd /code/handout/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /code/handout /code/handout /code/handout/build /code/handout/build /code/handout/build/CMakeFiles/Lab3.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/Lab3.dir/depend
 

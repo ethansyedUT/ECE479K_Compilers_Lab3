@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /code
+CMAKE_SOURCE_DIR = /code/handout
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /code/build
+CMAKE_BINARY_DIR = /code/handout/build
 
 # Utility rule file for intrinsics_gen.
 
@@ -78,6 +78,6 @@ CMakeFiles/intrinsics_gen.dir/clean:
 .PHONY : CMakeFiles/intrinsics_gen.dir/clean
 
 CMakeFiles/intrinsics_gen.dir/depend:
-	cd /code/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /code /code /code/build /code/build /code/build/CMakeFiles/intrinsics_gen.dir/DependInfo.cmake --color=$(COLOR)
+	cd /code/handout/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /code/handout /code/handout /code/handout/build /code/handout/build /code/handout/build/CMakeFiles/intrinsics_gen.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/intrinsics_gen.dir/depend
 

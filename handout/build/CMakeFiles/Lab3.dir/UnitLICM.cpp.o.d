@@ -1,4 +1,4 @@
-CMakeFiles/Lab3.dir/UnitLICM.cpp.o: /code/UnitLICM.cpp \
+CMakeFiles/Lab3.dir/UnitLICM.cpp.o: /code/handout/UnitLICM.cpp \
  /usr/include/stdc-predef.h /usr/local/include/llvm/Support/raw_ostream.h \
  /usr/local/include/llvm/ADT/SmallVector.h \
  /usr/local/include/llvm/Support/Compiler.h \
@@ -231,7 +231,7 @@ CMakeFiles/Lab3.dir/UnitLICM.cpp.o: /code/UnitLICM.cpp \
  /usr/local/include/llvm-c/DataTypes.h /usr/include/inttypes.h \
  /usr/local/include/llvm/Support/ErrorHandling.h \
  /usr/local/include/llvm/Support/SwapByteOrder.h \
- /usr/local/include/llvm/ADT/None.h /code/UnitLICM.h \
+ /usr/local/include/llvm/ADT/None.h /code/handout/UnitLICM.h \
  /usr/local/include/llvm/IR/PassManager.h \
  /usr/local/include/llvm/ADT/DenseMap.h \
  /usr/local/include/llvm/ADT/EpochTracker.h \
@@ -345,7 +345,7 @@ CMakeFiles/Lab3.dir/UnitLICM.cpp.o: /code/UnitLICM.cpp \
  /usr/local/include/llvm/Support/Format.h \
  /usr/local/include/llvm/Support/TypeName.h /usr/include/c++/11/list \
  /usr/include/c++/11/bits/stl_list.h /usr/include/c++/11/bits/list.tcc \
- /code/UnitLoopInfo.h /usr/local/include/llvm/IR/Dominators.h \
+ /code/handout/UnitLoopInfo.h /usr/local/include/llvm/IR/Dominators.h \
  /usr/local/include/llvm/ADT/DepthFirstIterator.h \
  /usr/local/include/llvm/ADT/GraphTraits.h \
  /usr/local/include/llvm/IR/CFG.h /usr/local/include/llvm/Pass.h \

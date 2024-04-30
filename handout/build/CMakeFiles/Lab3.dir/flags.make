@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DLab3_EXPORTS
 
-CXX_INCLUDES = -I/code
+CXX_INCLUDES = -I/code/handout
 
 CXX_FLAGS = -fPIC -fno-rtti -std=gnu++20
 

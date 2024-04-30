@@ -1,6 +1,6 @@
-/code/build/CMakeFiles/intrinsics_gen.dir
-/code/build/CMakeFiles/omp_gen.dir
-/code/build/CMakeFiles/acc_gen.dir
-/code/build/CMakeFiles/Lab3.dir
-/code/build/CMakeFiles/edit_cache.dir
-/code/build/CMakeFiles/rebuild_cache.dir
+/code/handout/build/CMakeFiles/intrinsics_gen.dir
+/code/handout/build/CMakeFiles/omp_gen.dir
+/code/handout/build/CMakeFiles/acc_gen.dir
+/code/handout/build/CMakeFiles/Lab3.dir
+/code/handout/build/CMakeFiles/edit_cache.dir
+/code/handout/build/CMakeFiles/rebuild_cache.dir
