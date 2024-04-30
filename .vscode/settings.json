@@ -79,6 +79,8 @@
         "print": "cpp",
         "*.def": "cpp",
         "forward_list": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "*.inc": "cpp",
+        "regex": "cpp"
     }
 }

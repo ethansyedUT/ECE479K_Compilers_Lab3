@@ -371,4 +371,19 @@ CMakeFiles/Lab3.dir/UnitLICM.cpp.o: /code/UnitLICM.cpp \
  /usr/local/include/llvm/IR/Instructions.h \
  /usr/local/include/llvm/ADT/MapVector.h \
  /usr/local/include/llvm/IR/InstrTypes.h \
- /usr/local/include/llvm/ADT/Sequence.h
+ /usr/local/include/llvm/ADT/Sequence.h \
+ /usr/local/include/llvm/IR/IRBuilder.h \
+ /usr/local/include/llvm/IR/ConstantFolder.h \
+ /usr/local/include/llvm/IR/Constants.h \
+ /usr/local/include/llvm/ADT/APFloat.h \
+ /usr/local/include/llvm/ADT/FloatingPointMode.h \
+ /usr/local/include/llvm/ADT/StringSwitch.h \
+ /usr/local/include/llvm/IR/ConstantFold.h \
+ /usr/local/include/llvm/IR/IRBuilderFolder.h \
+ /usr/local/include/llvm/IR/Operator.h /usr/local/include/llvm/IR/FMF.h \
+ /usr/local/include/llvm/IR/FPEnv.h \
+ /usr/local/include/llvm/IR/Intrinsics.h \
+ /usr/local/include/llvm/IR/IntrinsicEnums.inc \
+ /usr/local/include/llvm/IR/ValueHandle.h \
+ /usr/local/include/llvm/Transforms/Utils/BasicBlockUtils.h \
+ /usr/local/include/llvm/ADT/SetVector.h

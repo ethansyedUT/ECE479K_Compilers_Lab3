@@ -5,8 +5,13 @@
 #include "UnitLoopInfo.h"
 
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Dominators.h"
+#include "llvm/IR/CFG.h"
+#include "llvm/IR/IRBuilder.h"
 //"C:\Users\Ethan\Desktop\Classes\ECE479K_Compilers\Labs\Lab3\llvm\llvm\include\llvm\MCA\Instruction.h"
+
+#include "llvm/Transforms/Utils/BasicBlockUtils.h"
 
 #define DEBUG_TYPE UnitLICM
 // Define any statistics here
@@ -135,50 +140,113 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
   }
 
   DominatorTree &DT = FAM.getResult<DominatorTreeAnalysis>(F);
-
   dbgs() << "========== Hoisting Pass ========== "
          << "\n";
   // Actual hoisting of instructions
   for (auto &loop : Loops.get_NaturalLoops())
   {
     BasicBlock *header = *loop.second.begin(); // Get the loop header
+    BasicBlock *lastBasicBlock = *loop.second.rbegin(); //last block of body
 
-    // BasicBlock* preheader = F.getBasicBlockByName(loop.first); // Get the loop preheader
-    //  create a preheader basicblock
+
+    //  creating a preheader basicblock
+    //  No conditional checking | Should be run with an additional few LLVM passes to rid extraneous preheaders
     BasicBlock *preheader;
     bool preheaderCreated = false;
-
     if (!preheaderCreated)
     {
-      preheader = BasicBlock::Create(header->getContext(), "preheader", header->getParent());
-      BranchInst::Create(header, preheader); // Causes Seg fault when switched (preheader, header)
-      for (BasicBlock *pred : predecessors(header))
-      {
-        pred->getTerminator()->replaceUsesOfWith(header, preheader); // Problem here
-      }
-      // DT.addNewBlock(preheader, header);
+      dbgs() << "Header: " << header->getName() << "\n";
+      preheader = BasicBlock::Create(header->getContext(), header->getName() + "_preheader", header->getParent());
+       for (BasicBlock* BB : predecessors(header)) {
+        // Check if the current basic block branches to successorBB
+    
+        if(BB == lastBasicBlock){
+          dbgs() << "\tPred: " << BB->getName() << " has backedge (skip)" << "\n";
+          continue;
+        }else{
+          dbgs() << "\tPred: " << BB->getName() << "\n";
+        }
+         // Iterate over all the instructions in the source basic block
+        for (BasicBlock::iterator I = BB->begin(), E = BB->end(); I != E; ++I)
+        {
+          Instruction *Inst = &*I;
+          // Check if the instruction is a branch instruction
+          //dbgs() << "\t\tIns opcode: " << Inst->getOpcodeName() << "\n";
 
-      preheaderCreated = true;
+          if(isa<BranchInst>(*Inst)){
+            BranchInst *branchInst = dyn_cast<BranchInst>(Inst);
+
+            if (branchInst->isConditional()) {
+              dbgs() << "\t\tConditional branch" << "\n";
+              BasicBlock *blockToPush;
+              int loc;
+              if(branchInst->getSuccessor(0) == header){
+                //true
+                blockToPush = branchInst->getSuccessor(0);
+                loc = 0;
+              }else if(branchInst->getSuccessor(1) == header){
+                //false
+                blockToPush = branchInst->getSuccessor(1);
+                loc = 1;
+              }
+              branchInst->setSuccessor(loc, preheader);
+              IRBuilder<> builder(preheader);
+              builder.CreateBr(blockToPush);
+
+            }else{
+                //
+                for (unsigned i = 0; i < branchInst->getNumSuccessors(); ++i) {
+                  if (branchInst->getSuccessor(i) == header) {
+                    dbgs() << "\t\tUnconditional branch" << "\n";
+                    // Move the branch instruction from foo_BB1 to the preheader block
+                    BB->getTerminator()->eraseFromParent();
+                    IRBuilder<> builder(BB);
+                    builder.CreateBr(preheader);
+                    // Found a branch to the target basic block
+                    // Redirect the branch to the new target basic block
+                    //branchInst->setSuccessor(i, newTargetBB);
+                    builder.SetInsertPoint(preheader);
+                    builder.CreateBr(header);
+                  }
+                }
+            }
+
+            // Update old phi's to merge from preheaders
+            for (PHINode &phi : header->phis()) {
+              for (unsigned i = 0; i < phi.getNumIncomingValues(); ++i) {
+                if (phi.getIncomingBlock(i) == BB) {
+                  phi.setIncomingBlock(i, preheader);
+                }
+              }
+            }
+
+          }
+        }
+        // // only find branches to loop header before actual loop header
+        // if(BB == header){
+        //   break;
+        // }
+        preheaderCreated = true;
+      }
     }
+
+    dbgs() << "Preheader Created!" << "\n";
 
     for (BasicBlock *bb : loop.second)
     {
       for (BasicBlock::iterator I = bb->begin(), E = bb->end(); I != E; ++I)
       {
         Instruction *Inst = &*I;
-        // Skip terminator operations
-        if (Inst->isTerminator())
-        {
+        if (Inst->isTerminator()) // Skip terminator operations
           continue;
-        }
-
-        bool canHoist = !Inst->mayHaveSideEffects(); // Change later to handle mem ops
-
+        
+        bool canHoist = true; // Change later to handle mem ops
         bool sideEffects = Inst->mayHaveSideEffects();
         if (!sideEffects)
         {
           for (Value *op : Inst->operands())
           {
+            //dbgs() << "operands: "<< op->getName() << "\n";
             // Logic here may be incorrect
             if (Instruction *opInst = dyn_cast<Instruction>(op))
             {
@@ -193,6 +261,7 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
         else
         {
           // ld / st
+          canHoist = false;
         }
 
         if (canHoist)
@@ -200,16 +269,7 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
           // Inst->insertBefore(header);
           dbgs() << "Perform Hoist"
                  << "\n";
-          // Inst->moveBefore(preheader->getTerminator());
-          BasicBlock::reverse_iterator rit = preheader->rbegin();
-          // Check if the basic block is not empty
-          if (rit != preheader->rend())
-          {
-            Instruction *lastInst = &*rit;
-            dbgs() << "\t\tIns opcode: " << lastInst->getOpcodeName() << "\n";
-            // Inst->removeFromParent();   // Cause Seg Fault
-            // Inst->moveBefore(lastInst); // Cause Seg Fault
-          }
+          //Inst->moveBefore(preheader->getTerminator());
         }
       }
     }
@@ -223,3 +283,13 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
 /*
 clang ../tests/doloop.c -c -O0 -Xclang -disable-O0-optnone -emit-llvm -S -o - | opt -load-pass-plugin=./libLab3.so -passes="function(mem2reg,instcombine,simplifycfg,adce),inline,globaldce,function(sroa,early-cse,unit-sccp,jump-threading,correlated-propagation,simplifycfg,instcombine,simplifycfg,reassociate,unit-licm,adce,simplifycfg,instcombine),globaldce" -S -o doloop.ll
 */
+
+// BasicBlock::reverse_iterator rit = preheader->rbegin();
+// // Check if the basic block is not empty
+// if (rit != preheader->rend())
+// {
+//   Instruction *lastInst = &*rit;
+//   dbgs() << "\t\tIns opcode: " << lastInst->getOpcodeName() << "\n";
+//   // Inst->removeFromParent();   // Cause Seg Fault
+//   // Inst->moveBefore(lastInst); // Cause Seg Fault
+// }
