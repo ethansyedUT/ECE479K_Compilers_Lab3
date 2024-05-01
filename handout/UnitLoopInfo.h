@@ -40,8 +40,7 @@ class UnitLoopInfo {
       : NaturalLoops(NL), DomTree(DT), LoopExits(LE) {numberOfLoops = NL.size();}
     */
     UnitLoopInfo(std::map<StringRef, UnitLoopInfoHelper*> helpers, DominatorTree* DT):
-    LoopHelpers(helpers),DomTree(DT)
-    {
+    LoopHelpers(helpers),DomTree(DT){
       //get the keys
       for(auto it = helpers.begin(); it != helpers.end(); it++){
         NaturalLoopsHeaderNames.insert(it->first);

@@ -15,11 +15,14 @@ struct UnitLICM : PassInfoMixin<UnitLICM> {
 
   bool Can_Hoist(Instruction* i, BasicBlock* bb ,UnitLoopInfoHelper Loop, DominatorTree* DT);
   
-  std::pair<bool,bool> Is_Loop_Invariant(Instruction* i, std::set<BasicBlock*> loop);
+  bool Is_Loop_Invariant(Instruction* i, std::set<BasicBlock*> loop);
   
   bool In_Loop(BasicBlock* bb, std::set<BasicBlock*> loop,bool includeHeader);
   
   BasicBlock* CreatePreheader(BasicBlock* header, BasicBlock* tail);
+  bool Is_LoadStore_Loop_Invariant(Instruction* I, UnitLoopInfoHelper helper, AAResults* AA);
+
+  
 };
 } // namespace
 

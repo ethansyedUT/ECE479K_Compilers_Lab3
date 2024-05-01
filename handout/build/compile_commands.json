@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/code/handout/build",
+  "command": "/usr/local/bin/clang++ -DLab3_EXPORTS -I/code/handout -g -fPIC -fno-rtti -std=gnu++20 -o CMakeFiles/Lab3.dir/UnitLICM.cpp.o -c /code/handout/UnitLICM.cpp",
+  "file": "/code/handout/UnitLICM.cpp"
+},
+{
+  "directory": "/code/handout/build",
+  "command": "/usr/local/bin/clang++ -DLab3_EXPORTS -I/code/handout -g -fPIC -fno-rtti -std=gnu++20 -o CMakeFiles/Lab3.dir/UnitLoopInfo.cpp.o -c /code/handout/UnitLoopInfo.cpp",
+  "file": "/code/handout/UnitLoopInfo.cpp"
+},
+{
+  "directory": "/code/handout/build",
+  "command": "/usr/local/bin/clang++ -DLab3_EXPORTS -I/code/handout -g -fPIC -fno-rtti -std=gnu++20 -o CMakeFiles/Lab3.dir/UnitSCCP.cpp.o -c /code/handout/UnitSCCP.cpp",
+  "file": "/code/handout/UnitSCCP.cpp"
+},
+{
+  "directory": "/code/handout/build",
+  "command": "/usr/local/bin/clang++ -DLab3_EXPORTS -I/code/handout -g -fPIC -fno-rtti -std=gnu++20 -o CMakeFiles/Lab3.dir/RegisterPasses.cpp.o -c /code/handout/RegisterPasses.cpp",
+  "file": "/code/handout/RegisterPasses.cpp"
+}
+]

@@ -69,6 +69,7 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
   UnitLoopInfo &Loops = FAM.getResult<UnitLoopAnalysis>(F);
   AAResults &AliasAnalis = FAM.getResult<AAManager>(F);
 
+
   // Perform the optimization
   // Loops.get_NaturalLoops();
 
@@ -189,19 +190,21 @@ void UnitLICM::Hoist(std::pair<const llvm::StringRef, std::set<llvm::BasicBlock 
       UnitLoopInfoHelper helper = *(Loops.LoopHelpers[header->getName()]);
 
       bool canHoist = this->Can_Hoist(Inst, bb, helper, Loops.getDomTree());
-      std::pair<bool, bool> loopInvarient = Is_Loop_Invariant(Inst, loop.second);
-      bool isLoopInvarient = loopInvarient.first;        // regular loop invariance
-      bool isLoopMemoryInvarient = loopInvarient.second; // load/store loop invariance
+      bool isLoopInvarient= Is_Loop_Invariant(Inst, loop.second); //regular loop invariance
+
+      bool isLoopMemoryInvarient = Is_LoadStore_Loop_Invariant(Inst,helper, &AliasAnalis); // load/store loop invariance
 
       if (canHoist && isLoopInvarient) // if you can safely hoist it and it is loop invarient
       {
         dbgs() << "Perform Hoist " << Inst->getName() << "\n";
         // https://stackoverflow.com/questions/13370306/how-to-insert-a-llvm-instruction
-        auto topofPreheader = preheader->begin();
+        auto topofPreheader = preheader->end()--;
+        topofPreheader--;
         IRBuilder<> Builder = IRBuilder<>(preheader, topofPreheader);
         //Builder.Insert(Inst);
         Instruction *clonedInst = Inst->clone();
         Builder.Insert(clonedInst);
+        preheader->print(dbgs());
         I++;
         Inst->replaceAllUsesWith(clonedInst);
         bb->getInstList().remove(*Inst);
@@ -257,7 +260,7 @@ bool UnitLICM::Can_Hoist(Instruction *i, BasicBlock *bb, UnitLoopInfoHelper Loop
 }
 
 // returns true if the instruction is loop invariant
-std::pair<bool, bool> UnitLICM::Is_Loop_Invariant(Instruction *i, std::set<BasicBlock *> loop)
+bool UnitLICM::Is_Loop_Invariant(Instruction *i, std::set<BasicBlock *> loop)
 {
   // every operand of i is either constant or defined outside of the loop
 
@@ -272,7 +275,7 @@ std::pair<bool, bool> UnitLICM::Is_Loop_Invariant(Instruction *i, std::set<Basic
 
       if (In_Loop(bb, loop, true))
       { // return false if basic block is only in the loop body.. not the including hte header
-        return std::make_pair(false, false);
+        return false;
       }
     }
 
@@ -284,16 +287,12 @@ std::pair<bool, bool> UnitLICM::Is_Loop_Invariant(Instruction *i, std::set<Basic
   bool first = false, second = false;
   if (i->isBinaryOp() || i->isShift() || i->isCast() || i->getOpcode() == Instruction::GetElementPtr || i->getOpcode() == Instruction::Select)
   {
-    return std::make_pair(true, false);
+    return true;
   }
-  else if (i->getOpcode() == Instruction::Load || i->getOpcode() == Instruction::Store)
-  {
-    return std::make_pair(false, false); // CHANGE LATER
+  else{
+    return false;
   }
-  else
-  {
-    return std::make_pair(false, false);
-  }
+
 }
 
 bool UnitLICM::In_Loop(BasicBlock *bb, std::set<BasicBlock *> loop, bool includeHeader)
@@ -405,3 +404,63 @@ BasicBlock *UnitLICM::CreatePreheader(BasicBlock *header, BasicBlock *tail)
   }
   return preheader;
 }
+
+bool UnitLICM::Is_LoadStore_Loop_Invariant(Instruction* I, UnitLoopInfoHelper helper, AAResults* AA){
+  auto opcode = I->getOpcode(); LoadInst* loadInstruction; StoreInst* storeInstruction;
+  if(opcode != Instruction::Load && opcode != Instruction::Store){return false;}
+  //do if load instruction
+  else if(opcode == Instruction::Load && LoadInst::classof(I)){
+    dbgs() << "Load Instruction Detected\n";
+    //try to cast to load instruction
+    if (!(loadInstruction = dyn_cast<LoadInst>(I))){return false; dbgs()<< "Could not cast to LoadInst\n";}
+
+    //get the address operad  
+    llvm::Value* address = loadInstruction->getPointerOperand();
+
+    //constant address means at it is loop invariant i think because the stuff in the value is not changing.
+    //for example the global vtable prototype in lab2
+    if(isa<Constant>(address)){return true;}
+    else{
+       //check if the address is stored on in the loop
+      for(User* addressUser : address->users()){
+        if(StoreInst* addressUserInst = dyn_cast<StoreInst>(addressUser)){
+          if(helper.LoopBody.count(addressUserInst->getParent()) > 0){
+            return false;
+          }
+        }
+      }
+      //check if that address can be aliased with any other address in the loop
+      for(BasicBlock* bb : helper.LoopBody){
+        for(Instruction& inst : *bb){
+          if(StoreInst* storeInst = dyn_cast<StoreInst>(&inst)){
+            if(!AA->isNoAlias(address, storeInst->getPointerOperand())){
+              return false;
+            }
+          }
+        }
+      }
+
+      //if its not being stored on by its direct address nor its aliased with any other store instruction
+      return true;
+    }
+  }
+  else if(opcode == Instruction::Store && StoreInst::classof(I)){
+    storeInstruction = dyn_cast<StoreInst>(I);
+    llvm::Value* address = storeInstruction->getPointerOperand();
+    if(isa<Constant>(address)) return true;
+    
+    // stores can be hoisted up if they are not loaded from in the loop and from an add
+
+
+
+  }
+  else{
+    dbgs() << "Instruction is not a load or store instruction but sometihign went wrong in Is_LoadStore_Loop_Invariant\n";
+    return false;
+  }
+
+
+}
+
+
+
