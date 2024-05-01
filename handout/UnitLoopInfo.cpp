@@ -33,17 +33,17 @@ UnitLoopInfo UnitLoopAnalysis::run(Function &F, FunctionAnalysisManager &FAM) {
 
   // initialize a list of natural loop here 
   //std::vector<std::set<BasicBlock*>> NaturalLoops;
-  std::map<StringRef, std::set<BasicBlock*>> NaturalLoops;
+  std::map<StringRef, UnitLoopInfoHelper*> helpers; 
+
 
 
 //look for successors that dominate the current basic block
   for (BasicBlock &basicBlock : F){
     for (BasicBlock *bassicBlockSuccessor : successors(&basicBlock)){
       // if the successor doesnt dominate the current basic block, skip
-      if(!DT.dominates(bassicBlockSuccessor, &basicBlock)){continue;} 
+      if(!DT.properlyDominates(bassicBlockSuccessor, &basicBlock)){continue;} 
     
       //not sure if this loop is necessary but it is a good idea to check if the successor(header) dominates all of predecessors(LoopBody)
-      
       for( BasicBlock *basicBlockPredicessor : predecessors(&basicBlock)){
         //changed the condition since the previous code would define the predicessor but not use the prediciesor
         if(!DT.dominates(bassicBlockSuccessor,basicBlockPredicessor)){
@@ -51,6 +51,7 @@ UnitLoopInfo UnitLoopAnalysis::run(Function &F, FunctionAnalysisManager &FAM) {
           dbgs() << bassicBlockSuccessor->getName() << " does not dominate predecessor: " << basicBlockPredicessor->getName() << "\n";
         }
       }
+
       
 
       // Add nodes between the dominator node and the final node to the list of basic block
@@ -82,6 +83,8 @@ UnitLoopInfo UnitLoopAnalysis::run(Function &F, FunctionAnalysisManager &FAM) {
 
       //find the loop exits 
       std::set<std::pair<BasicBlock*,BasicBlock*>> LoopExits;
+
+
       for (BasicBlock *bb : LoopBody){
         for (BasicBlock *succ : successors(bb)){
           if(std::find(LoopBody.begin(), LoopBody.end(), succ) == LoopBody.end()){
@@ -89,24 +92,20 @@ UnitLoopInfo UnitLoopAnalysis::run(Function &F, FunctionAnalysisManager &FAM) {
           }
         }
       }
+      UnitLoopInfoHelper* h = new UnitLoopInfoHelper(LoopBody, header, loopEnd, LoopExits);
+      helpers.insert(std::make_pair(header->getName(), h));
 
-    //changed the key to the header name since that is what is assumed in the LICM.cpp
-    #ifdef LOOPKEYISHEADER
-    NaturalLoops[header->getName()] = LoopBody; 
-    #else
-    NaturalLoops[tail->getName()] = LoopBody;
-    #endif
+
     }
+
     
   }
 
-  
+  UnitLoopInfo Loops(helpers, &DT);
 
-  UnitLoopInfo Loops(NaturalLoops, &DT);
-  //reachingDefinitions(F, Loops);
-  // Fill in appropriate information
-  //Loops.setNaturalLoops(NaturalLoops);
   return Loops;
+
+
 }
 
 // Initializes OUT set of each Loop

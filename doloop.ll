@@ -10,7 +10,7 @@ foo_BB1:
 
 foo_BB2:                                          ; preds = %foo_BB2_preheader, %foo_BB4
   %.01 = phi i32 [ 1, %foo_BB2_preheader ], [ %spec.select, %foo_BB4 ]
-  %.0 = phi i32 [ %0, %foo_BB2_preheader ], [ %5, %foo_BB4 ]
+  %.0 = phi i32 [ %0, %foo_BB2_preheader ], [ %6, %foo_BB4 ]
   %3 = icmp sgt i32 %.01, 0
   br i1 %3, label %foo_BB3, label %foo_BB4
 
@@ -19,19 +19,19 @@ foo_BB3:                                          ; preds = %foo_BB2
   br label %foo_BB4
 
 foo_BB4:                                          ; preds = %foo_BB3, %foo_BB2
+  %4 = sdiv i32 %0, -3
   %.neg = xor i32 %.01, -1
-  %4 = add i32 %.neg, %7
-  %5 = add nsw i32 %.0, %4
-  %spec.select = select i1 %3, i32 %.01, i32 %4
+  %5 = add i32 %.neg, %4
+  %6 = add nsw i32 %.0, %5
+  %spec.select = select i1 %3, i32 %.01, i32 %5
   store i32 %0, ptr %2, align 4
-  %6 = icmp sgt i32 %5, 0
-  br i1 %6, label %foo_BB2, label %foo_BB5, !llvm.loop !6
+  %7 = icmp sgt i32 %6, 0
+  br i1 %7, label %foo_BB2, label %foo_BB5, !llvm.loop !6
 
 foo_BB5:                                          ; preds = %foo_BB4
   ret i32 %spec.select
 
 foo_BB2_preheader:                                ; preds = %foo_BB1
-  %7 = sdiv i32 %0, -3
   br label %foo_BB2
 }
 

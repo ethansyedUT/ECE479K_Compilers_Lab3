@@ -440,4 +440,7 @@ CMakeFiles/Lab3.dir/RegisterPasses.cpp.o: \
  /usr/local/include/llvm/Support/GenericDomTreeConstruction.h \
  /usr/include/c++/11/queue /usr/include/c++/11/deque \
  /usr/include/c++/11/bits/stl_deque.h /usr/include/c++/11/bits/deque.tcc \
- /usr/include/c++/11/bits/stl_queue.h /code/handout/UnitSCCP.h
+ /usr/include/c++/11/bits/stl_queue.h \
+ /usr/local/include/llvm/Analysis/AliasAnalysis.h \
+ /usr/local/include/llvm/Analysis/MemoryLocation.h \
+ /code/handout/UnitSCCP.h

@@ -8,6 +8,9 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Dominators.h"
 #include "llvm/Analysis/ValueTracking.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/Analysis/AliasAnalysis.h"
+
 //"C:\Users\Ethan\Desktop\Classes\ECE479K_Compilers\Labs\Lab3\llvm\llvm\include\llvm\MCA\Instruction.h"
 
 #define DEBUG_TYPE UnitLICM
@@ -64,6 +67,7 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
   // Acquires the UnitLoopInfo object constructed by your Loop Identification
   // (LoopAnalysis) pass
   UnitLoopInfo &Loops = FAM.getResult<UnitLoopAnalysis>(F);
+  AAResults &AliasAnalis = FAM.getResult<AAManager>(F);
 
   // Perform the optimization
   // Loops.get_NaturalLoops();
@@ -121,147 +125,283 @@ PreservedAnalyses UnitLICM::run(Function &F, FunctionAnalysisManager &FAM)
     dbgs() << "\n";
   }
 
-  // Not needed
-  dbgs() << "========== Reaching Def Pass ========== " << "\n";
-
-
-  // Reaching definition analysis
-  for (const auto &loop : Loops.get_NaturalLoops())
-  {
-    for (BasicBlock *bb : loop.second)
-    {
-      for (BasicBlock::iterator I = bb->begin(), E = bb->end(); I != E; ++I)
-      {
-        Instruction *Inst = &*I;
-      }
-    }
-  }
-
   DominatorTree &DT = FAM.getResult<DominatorTreeAnalysis>(F);
 
-  dbgs() << "========== Hoisting Pass ========== "<< "\n";
-
+  dbgs() << "========== Hoisting Pass ========== "
+         << "\n";
 
   // Actual hoisting of instructions
-  for (auto &loop : Loops.get_NaturalLoops()){
-    Hoist(loop,Loops);
+  for (auto &loop : Loops.get_NaturalLoops())
+  {
+    Hoist(loop, Loops, AliasAnalis);
   }
 
   // Set proper preserved analyses
   return PreservedAnalyses::all();
 }
 
-void UnitLICM::Hoist(std::pair<const llvm::StringRef, std::set<llvm::BasicBlock *>> &loop, UnitLoopInfo Loops){
+void UnitLICM::Hoist(std::pair<const llvm::StringRef, std::set<llvm::BasicBlock *>> &loop, UnitLoopInfo Loops, AAResults &AliasAnalis)
+{
 
+// get the loop header
+#ifdef LOOPKEYISHEADER
+  BasicBlock *header = *loop.second.begin(); // Get the loop header
+  assert(header->getName() == loop.first && "Header name does not match loop name");
+#else
+  BasicBlock *header = loop.second.begin(); // Get the loop header
+#endif
 
-    //get the loop header
+  BasicBlock *tail = *loop.second.rbegin(); // last block of body
 
-    #ifdef LOOPKEYISHEADER
-    BasicBlock *header = *loop.second.begin(); // Get the loop header
-    assert(header->getName() == loop.first && "Header name does not match loop name");
-    #else
-    BasicBlock *header = loop.second.begin(); // Get the loop header
-    #endif
+  // CHANGE: removed the preheaderCreated is false check since it is always false
+  // CHANGE: make the preheader be inserted before the header instead of at the end of the function
+  // BasicBlock* preheader = BasicBlock::Create(header->getContext(), "preheader",nullptr, header);
+  BasicBlock *preheader = CreatePreheader(header, tail);
+  /*
+  assert(preheader!=nullptr && "Preheader not created");
+  assert(header!=nullptr && "could not get header from loop in LICM");
+  BranchInst::Create(header, preheader); // Causes Seg fault when switched (preheader, header)
+  for (BasicBlock *pred : predecessors(header))
+  {
+    //replace the uses with the preheader
+    pred->getTerminator()->replaceUsesOfWith(header, preheader);
+  }
+  */
 
-
-    //CHANGE: removed the preheaderCreated is false check since it is always false
-    //CHANGE: make the preheader be inserted before the header instead of at the end of the function 
-    BasicBlock* preheader = BasicBlock::Create(header->getContext(), "preheader",nullptr, header); 
-    
-    assert(preheader!=nullptr && "Preheader not created");
-    assert(header!=nullptr && "could not get header from loop in LICM");
-    BranchInst::Create(header, preheader); // Causes Seg fault when switched (preheader, header)
-    for (BasicBlock *pred : predecessors(header))
+  for (BasicBlock *bb : loop.second)
+  {
+    // Skip the header
+    if (bb == header && bb->getName().compare(header->getName()) == 0)
     {
-      //replace the uses with the preheader
-      pred->getTerminator()->replaceUsesOfWith(header, preheader);
+      continue;
     }
 
+    for (BasicBlock::iterator I = bb->begin(), E = bb->end(); I != E; ++I)
+    {
+      Instruction *Inst = &*I;
+      dbgs() << "Instruction: " << Inst->getOpcodeName()<< " " ;
+      // Skip terminator operations
+      if (Inst->isTerminator())
+      {
+        continue;
+      }
+      // UnitLoopInfoHelper helper= Loops.get_UnitLoopInfoHelper(header->getName());
+      UnitLoopInfoHelper helper = *(Loops.LoopHelpers[header->getName()]);
 
+      bool canHoist = this->Can_Hoist(Inst, bb, helper, Loops.getDomTree());
+      std::pair<bool, bool> loopInvarient = Is_Loop_Invariant(Inst, loop.second);
+      bool isLoopInvarient = loopInvarient.first;        // regular loop invariance
+      bool isLoopMemoryInvarient = loopInvarient.second; // load/store loop invariance
 
+      if (canHoist && isLoopInvarient) // if you can safely hoist it and it is loop invarient
+      {
+        dbgs() << "Perform Hoist " << Inst->getName() << "\n";
+        // https://stackoverflow.com/questions/13370306/how-to-insert-a-llvm-instruction
+        auto topofPreheader = preheader->begin();
+        IRBuilder<> Builder = IRBuilder<>(preheader, topofPreheader);
+        //Builder.Insert(Inst);
+        Instruction *clonedInst = Inst->clone();
+        Builder.Insert(clonedInst);
+        I++;
+        Inst->replaceAllUsesWith(clonedInst);
+        bb->getInstList().remove(*Inst);
+      }
+      else
+      {
+        dbgs() << "Cannot Hoist " << Inst->getName() << "\n";
+      }
+      // else if(canHoist && isLoopMemoryInvarient){
+      //   dbgs() << "Perform load store Hoist " << Inst->getName()<< "\n";
+      //   int opcode =Inst->getOpcode();
+      //   LoadInst* loadInstruction;
+      //   StoreInst* storeInstruction;
+      //   if(opcode == Instruction::Load && LoadInst::classof(Inst)){
+      //     if (!(loadInstruction = dyn_cast<LoadInst>(Inst))){continue;}
+      //     llvm::Value* address = loadInstruction->getPointerOperand();
+      //     bool addressIsConstant = isa<Constant>(address);
 
+      // }
+      //   else if(opcode == Instruction::Store && LoadInst::classof(Inst)){
+      //     storeInstruction = dyn_cast<StoreInst>(Inst);
+      //     llvm::Value* address = storeInstruction->getPointerOperand();
+      //     bool addressIsConstant = isa<Constant>(address);
 
-    for (BasicBlock *bb : loop.second){
-      // Skip the header
-      if(bb == header && bb->getName().compare(header->getName()) ==0){continue;} 
-      
-      for (BasicBlock::iterator I = bb->begin(), E = bb->end(); I != E; ++I){
-        Instruction *Inst = &*I;
-        // Skip terminator operations
-        if (Inst->isTerminator()){continue;}
+      //   }
+      //   else {
+      //     //something went wrong
+      //   }
+      // }
+    }
+  }
+}
 
-        bool canHoist = this->canHoist(Inst,bb,header,Loops);
-        bool isLoopInvarient = Inst->mayHaveSideEffects();
+bool UnitLICM::Can_Hoist(Instruction *i, BasicBlock *bb, UnitLoopInfoHelper Loop, DominatorTree *DT)
+{
+  if (isSafeToSpeculativelyExecute(i))
+  {
+    return true;
+  }
 
+  // check if bb dominates all exits
+  for (auto &exit : Loop.LoopExits)
+  {
+    assert(exit.first != nullptr && "Exit block is null");
 
-        if (!isLoopInvarient){
-          for (Value *op : Inst->operands())
+    if (!DT->properlyDominates(bb, exit.first))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// returns true if the instruction is loop invariant
+std::pair<bool, bool> UnitLICM::Is_Loop_Invariant(Instruction *i, std::set<BasicBlock *> loop)
+{
+  // every operand of i is either constant or defined outside of the loop
+
+  // 2.) Every operand of the instruction is either const or computed outside of loop
+  for (Value *op : i->operands())
+  {
+    // get the operands of I
+    if (Instruction *opInst = dyn_cast<Instruction>(op))
+    {
+      BasicBlock *bb = opInst->getParent();
+      // if the the instruction was defined in the body of the loop then it is not loop invariant;
+
+      if (In_Loop(bb, loop, true))
+      { // return false if basic block is only in the loop body.. not the including hte header
+        return std::make_pair(false, false);
+      }
+    }
+
+    // if it couldnt cast to a instruction then it is a constant ... so it is loop invariant
+  }
+
+  // 1.) If it is LLVM ins (binary op, shift, select, cast, gep)
+  // check if the operation is binary opreator, shift, select, cast, getelementptr,
+  bool first = false, second = false;
+  if (i->isBinaryOp() || i->isShift() || i->isCast() || i->getOpcode() == Instruction::GetElementPtr || i->getOpcode() == Instruction::Select)
+  {
+    return std::make_pair(true, false);
+  }
+  else if (i->getOpcode() == Instruction::Load || i->getOpcode() == Instruction::Store)
+  {
+    return std::make_pair(false, false); // CHANGE LATER
+  }
+  else
+  {
+    return std::make_pair(false, false);
+  }
+}
+
+bool UnitLICM::In_Loop(BasicBlock *bb, std::set<BasicBlock *> loop, bool includeHeader)
+{
+  auto begin = loop.begin();
+  if (!includeHeader)
+  {
+    begin++;
+  }
+  return std::find(begin, loop.end(), bb) != loop.end();
+}
+
+BasicBlock *UnitLICM::CreatePreheader(BasicBlock *header, BasicBlock *tail)
+{
+  dbgs() << "Header: " << header->getName() << "\n";
+  BasicBlock *preheader = BasicBlock::Create(header->getContext(), header->getName() + "_preheader", header->getParent());
+  for (BasicBlock *BB : predecessors(header))
+  {
+    // Check if the current basic block branches to successorBB
+
+    if (BB == tail)
+    { // skip loop tail
+      dbgs() << "\tPred: " << BB->getName() << " has backedge (skip)"
+             << "\n";
+      continue;
+    }
+    else
+    {
+      dbgs() << "\tPred: " << BB->getName() << "\n";
+    }
+
+    // Iterate over all the instructions in the source basic block
+    for (BasicBlock::iterator I = BB->begin(), E = BB->end(); I != E; ++I)
+    {
+      Instruction *Inst = &*I;
+      // Check if the instruction is a branch instruction
+      // dbgs() << "\t\tIns opcode: " << Inst->getOpcodeName() << "\n";
+
+      if (Inst && isa<BranchInst>(*Inst))
+      {
+        BranchInst *branchInst = dyn_cast<BranchInst>(Inst);
+
+        if (branchInst->isConditional())
+        {
+          dbgs() << "\t\tConditional branch"
+                 << "\n";
+          BasicBlock *blockToPush;
+          int loc;
+          if (branchInst->getSuccessor(0) == header)
           {
-            // Logic here may be incorrect
-            if (Instruction *opInst = dyn_cast<Instruction>(op))
+            // true
+            blockToPush = branchInst->getSuccessor(0);
+            loc = 0;
+          }
+          else if (branchInst->getSuccessor(1) == header)
+          {
+            // false
+            blockToPush = branchInst->getSuccessor(1);
+            loc = 1;
+          }
+          branchInst->setSuccessor(loc, preheader);
+          IRBuilder<> builder(preheader);
+          builder.CreateBr(blockToPush);
+        }
+
+        else
+        {
+          bool hasHeaderSuccessor = false;
+          for (unsigned i = 0; i < branchInst->getNumSuccessors(); ++i)
+          {
+            if (branchInst->getSuccessor(i) == header)
             {
-              if (loop.second.count(opInst->getParent()) > 0)
-              {
-                canHoist = false;
-                break;
-              }
+              // Set the successor
+              branchInst->setSuccessor(i, preheader);
+              hasHeaderSuccessor = true;
+              break;
+            }
+          }
+
+          if (hasHeaderSuccessor)
+          {
+            dbgs() << "\t\tUnconditional branch"
+                   << "\n";
+
+            // Move the branch instruction from BB to the preheader block
+            BB->getTerminator()->eraseFromParent();
+            IRBuilder<> builder(BB);
+            builder.CreateBr(preheader);
+
+            // Create a single branch instruction in the preheader block
+            builder.SetInsertPoint(preheader);
+            builder.CreateBr(header);
+          }
+        }
+
+        // Update old phi's to merge from preheaders
+        for (PHINode &phi : header->phis())
+        {
+          for (unsigned i = 0; i < phi.getNumIncomingValues(); ++i)
+          {
+            if (phi.getIncomingBlock(i) == BB)
+            {
+              phi.setIncomingBlock(i, preheader);
             }
           }
         }
-        else{
-          // ld / st
-        }
-
-        if (canHoist)
-        {
-          // Inst->insertBefore(header);
-          dbgs() << "Perform Hoist"
-                 << "\n";
-          // Inst->moveBefore(preheader->getTerminator());
-          BasicBlock::reverse_iterator rit = preheader->rbegin();
-          // Check if the basic block is not empty
-          if (rit != preheader->rend())
-          {
-            Instruction *lastInst = &*rit;
-            dbgs() << "\t\tIns opcode: " << lastInst->getOpcodeName() << "\n";
-            // Inst->removeFromParent();   // Cause Seg Fault
-            // Inst->moveBefore(lastInst); // Cause Seg Fault
-          }
-        }
-
-
-
       }
     }
-
-  
-
-
-}
-bool UnitLICM::canHoist(Instruction* i, BasicBlock* bb, BasicBlock* Header ,UnitLoopInfo Loops){
-  if(isSafeToSpeculativelyExecute(i)){
-    return true;
   }
-  else{
-    //check if bb dominates all exits
-    DominatorTree *DT = Loops.getDomTree();
-    for(auto &exit : Loops.get_LoopExits().at(Header->getName())){
-      if(!DT->dominates(bb,exit.first)){
-        return false;
-      }
-    }
-    return true;
-  }
-}
-
-bool UnitLICM::isLoopInvariant(Instruction* i){
-  //every operand of i is either constant or defined outside of the loop
-  for (Value *op : i->operands())
-  {
-    
-    
-
-  }
-
-
+  return preheader;
 }

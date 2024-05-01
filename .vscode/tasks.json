@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "make",
+        "targetName": "-j4",
+        "makeFileRelativePath": "handout/build/Makefile",
+        "problemMatcher": [],
+        "label": "make: build with extra args",
+        "args": [
+          "--always-make",
+          "--ignore-errors"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+  }
